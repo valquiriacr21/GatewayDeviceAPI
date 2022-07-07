@@ -8,6 +8,7 @@ namespace GatewayDeviceAPI.Models
 {
     public class AppDbContext:DbContext
     {
+        public static string RouteMapConnection = "Server=(localdb)\\MSSQLLocalDB;Database=GatewayDeviceAPI;Trusted_Connection=True;MultipleActiveResultSets=True;";
         public AppDbContext(DbContextOptions<AppDbContext> options) : base(options)
         {
 

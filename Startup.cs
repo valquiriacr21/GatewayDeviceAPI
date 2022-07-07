@@ -1,18 +1,11 @@
 using GatewayDeviceAPI.Models;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
-using Microsoft.AspNetCore.HttpsPolicy;
-using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
-using Microsoft.Extensions.Logging;
 using Microsoft.OpenApi.Models;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
 
 namespace GatewayDeviceAPI
 {
@@ -22,9 +15,10 @@ namespace GatewayDeviceAPI
         {
             Configuration = configuration;
         }
+        string ConectionString = "Server=(localdb)\\MSSQLLocalDB;Database=GatewayDeviceAPI;Trusted_Connection=True;MultipleActiveResultSets=True;";
 
         public IConfiguration Configuration { get; }
-
+        //Data Source=(localdb)\\MSSQLLocalDB;Initial Catalog=GatewayDeviceAPI;Integrated Security=True
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {

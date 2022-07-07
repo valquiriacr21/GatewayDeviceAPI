@@ -8,18 +8,24 @@ namespace GatewayDeviceAPI.Models
 {
     public class Gateway
     {
-    
-       // public int GatewayId { get; set; }
-       [Key]
+        #region Properties
+        // public int GatewayId { get; set; }
+        [Key]
         public int SerialNumber { get; set; }
+        [MaxLength(50)]
         public string Name { get; set; }
         [Required]
+        [MaxLength(15)]
         public string IPV4 { get; set; }        
         public List<Device> Devices { get; set; }
+        #endregion
 
+
+        #region Constructor
         public Gateway()
         {
             Devices = new List<Device>();
         }
+        #endregion
     }
 }

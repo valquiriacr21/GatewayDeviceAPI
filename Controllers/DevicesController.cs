@@ -44,29 +44,39 @@ namespace GatewayDeviceAPI.Controllers
         // PUT: api/Devices/5
         // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
         [HttpPut("{id}")]
-        public async Task<IActionResult> PutDevice(int id, Device device)
+        public async Task<IActionResult> PutDevice(int id, [FromBody]Device device)
         {
             if (id != device.UID)
             {
                 return BadRequest();
             }
+            int count = 0;
 
-            _context.Entry(device).State = EntityState.Modified;
-
-            try
+            var deviceCount = await _context.Devices.Where(d => d.GatewaySerialNumber == device.GatewaySerialNumber).ToListAsync();
+            count = deviceCount.Count();
+            if (count > 10) 
             {
-                await _context.SaveChangesAsync();
+                return Problem("Each gateway cannot have more than 10 devices, select another gateway");
             }
-            catch (DbUpdateConcurrencyException)
-            {
-                if (!DeviceExists(id))
+            //else
+            //{
+                _context.Entry(device).State = EntityState.Modified;
+
+                try
                 {
-                    return NotFound();
+                    await _context.SaveChangesAsync();
                 }
-                else
+                catch (DbUpdateConcurrencyException)
                 {
-                    throw;
-                }
+                    if (!DeviceExists(id))
+                    {
+                        return NotFound();
+                    }
+                    else
+                    {
+                        throw;
+                    }
+                //}
             }
 
             return NoContent();
@@ -75,12 +85,27 @@ namespace GatewayDeviceAPI.Controllers
         // POST: api/Devices
         // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
         [HttpPost]
-        public async Task<ActionResult<Device>> PostDevice(Device device)
+        public async Task<ActionResult<Device>> PostDevice([FromBody]Device device)
         {
-            _context.Devices.Add(device);
-            await _context.SaveChangesAsync();
-
-            return CreatedAtAction("GetDevice", new { id = device.UID }, device);
+            //int id=device.UID;
+            //var deviceContext = await _context.Devices.FindAsync(id);
+            //if (deviceContext != null)
+            //{
+            //    return NotFound();
+            //}
+            //Además, no se permiten más de 10 dispositivos periféricos por puerta de enlace.
+            
+            int count = 0;
+            
+            var deviceCount = await _context.Devices.Where(d => d.GatewaySerialNumber == device.GatewaySerialNumber).ToListAsync();
+            count = deviceCount.Count();
+            if (count > 10) { return Problem("Each gateway cannot have more than 10 devices, select another gateway"); }
+            else
+            {
+                _context.Devices.Add(device);
+                await _context.SaveChangesAsync();
+                return CreatedAtAction("GetDevice", new { id = device.UID }, device); ;
+            }      
         }
 
         // DELETE: api/Devices/5
