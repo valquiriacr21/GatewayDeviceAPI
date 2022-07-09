@@ -29,6 +29,15 @@ namespace GatewayDeviceAPI.Controllers
         [HttpGet]
         public async Task<ActionResult<IEnumerable<Gateway>>> GetGateways()
         {
+            ///private IEnumerable<Gateway> gateways = new List<Gateway>();
+            //gateways=await _context.Gateways.ToListA();
+            //gateways
+
+            //foreach (var gateway in _context.Gateways)
+            //{
+            //    gateways= await _context.Gateways.Where(g => g.SerialNumber == id).Include(d => d.Devices).FirstAsync();
+            //var gateway = await _context.Gateways.Where(g => g.SerialNumber == _context.Gateways.).Include(d => d.Devices).FirstAsync();
+            //var gateway = await _context.Gateways.Select(g=>g.SerialNumber).Include(d => d.Devices).ToListAsync();
             return await _context.Gateways.ToListAsync();
         }
 
@@ -46,17 +55,48 @@ namespace GatewayDeviceAPI.Controllers
 
             return gateway;
         }
+        // GET: api/Gateways/name
+        [HttpGet("Name={name}")]
+        //[Route("{name}")]
+        public async Task<ActionResult<IEnumerable<Gateway>>> GetGatewaysByName(string name)
+        {
+            // var gateway = await _context.Gateways.FindAsync(id);
+            var gateways = await _context.Gateways.Where(g => g.Name == name).Include(d => d.Devices).ToListAsync();
+
+            if (gateways == null)
+            {
+                return NotFound();
+            }
+
+            return gateways;
+        }
+
+        // GET: api/Gateways/Ipv4
+        [HttpGet("IPv4={Ipv4}")]
+        //[Route("{Ipv4}")]
+        public async Task<ActionResult<IEnumerable<Gateway>>> GetGatewaysByIPv4(string Ipv4)
+        {
+            // var gateway = await _context.Gateways.FindAsync(id);
+            var gateways = await _context.Gateways.Where(g => g.IPV4 == Ipv4).Include(d => d.Devices).ToListAsync();
+
+            if (gateways == null)
+            {
+                return NotFound();
+            }
+
+            return gateways;
+        }
 
         // PUT: api/Gateways/5
         // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
         [HttpPut("{id}")]
-        public async Task<IActionResult> PutGateway(int id, Gateway gateway)
+        public async Task<IActionResult> PutGateway(int id, [FromBody]Gateway gateway)
         {
             if (id != gateway.SerialNumber)
             {
                 return BadRequest();
             }
-            if (CheckIPv4Valid(gateway.IPV4))
+            if (CheckIPv4Valid(gateway.IPV4) /*&& (IsIPv4NotExist(gateway.IPV4))*/)
             {
                 _context.Entry(gateway).State = EntityState.Modified;
 
@@ -86,9 +126,9 @@ namespace GatewayDeviceAPI.Controllers
         // POST: api/Gateways
         // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
         [HttpPost]
-        public async Task<ActionResult<Gateway>> PostGateway(Gateway gateway)
+        public async Task<ActionResult<Gateway>> PostGateway([FromBody]Gateway gateway)
         {
-            if (CheckIPv4Valid(gateway.IPV4))
+            if (CheckIPv4Valid(gateway.IPV4)/*&&(IsIPv4NotExist(gateway.IPV4))*/)
             {
                 _context.Gateways.Add(gateway);
                 await _context.SaveChangesAsync();
@@ -155,6 +195,19 @@ namespace GatewayDeviceAPI.Controllers
             }
             return true;
         }
+        //public bool IsIPv4NotExist(Gateway gateway)
+        //{
+        //    List<Gateway> gateways = new List<Gateway>();
+        //    gateways = _context.Gateways.ToList();
+        //    foreach (Gateway gatewayhere in gateways)
+        //    {  
+        //        if(gatewayhere.IPV4 == gateway.IPV4)
+        //        {
+        //            return false;
+        //        }
+        //    }
+        //    return true;
+        //}
         #endregion
 
     }

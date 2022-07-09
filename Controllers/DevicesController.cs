@@ -26,6 +26,37 @@ namespace GatewayDeviceAPI.Controllers
         {
             return await _context.Devices.ToListAsync();
         }
+        // GET: api/Devices
+        [HttpGet("DevicesGateways={GatewaySerialNumber}")]
+        //[RouteAttribute="DevicesGateways")]
+        public async Task<ActionResult<IEnumerable<Device>>> GetDevicesByGatewaySerialNumber(int GatewaySerialNumber)
+        {
+            var devices = await _context.Devices.Where(d => d.GatewaySerialNumber == GatewaySerialNumber).ToListAsync();
+            return devices;
+        }
+
+        // GET: api/Devices
+        [HttpGet("Vendor={Vendor}")]
+        //[RouteAttribute="DevicesGateways")]
+        public async Task<ActionResult<IEnumerable<Device>>> GetDevicesByVendor(string Vendor)
+        {
+            var devices = await _context.Devices.Where(d => d.Vendor == Vendor).ToListAsync();
+            return devices;
+        }
+        [HttpGet("Status={Status}")]
+        //[RouteAttribute="DevicesGateways")]
+        public async Task<ActionResult<IEnumerable<Device>>> GetDevicesByStatus(string Status)
+        {
+            var devices = await _context.Devices.Where(d => d.Status == Status).ToListAsync();
+            return devices;
+        }
+        [HttpGet("DateCreated={DateCreated}")]
+        //[RouteAttribute="DevicesGateways")]
+        public async Task<ActionResult<IEnumerable<Device>>> GetDevicesByDateCreated(DateTime DateCreated)
+        {
+            var devices = await _context.Devices.Where(d => d.DateCreated == DateCreated).ToListAsync();
+            return devices;
+        }
 
         // GET: api/Devices/5
         [HttpGet("{id}")]
@@ -48,20 +79,18 @@ namespace GatewayDeviceAPI.Controllers
         {
             if (id != device.UID)
             {
-                return BadRequest();
+                return Problem("You need write the correct id");
             }
+            
             int count = 0;
-
             var deviceCount = await _context.Devices.Where(d => d.GatewaySerialNumber == device.GatewaySerialNumber).ToListAsync();
             count = deviceCount.Count();
-            if (count > 10) 
+            if (count <= 10)
             {
-                return Problem("Each gateway cannot have more than 10 devices, select another gateway");
-            }
-            //else
-            //{
                 _context.Entry(device).State = EntityState.Modified;
-
+                //Edit have a poblem if not modify the serial number Gateway
+                //await _context.SaveChangesAsync();
+                //return OkResult;
                 try
                 {
                     await _context.SaveChangesAsync();
@@ -76,7 +105,11 @@ namespace GatewayDeviceAPI.Controllers
                     {
                         throw;
                     }
-                //}
+                }
+            }
+            else
+            {
+                return Problem("Each gateway cannot have more than 10 devices, select another gateway");
             }
 
             return NoContent();
@@ -94,18 +127,22 @@ namespace GatewayDeviceAPI.Controllers
             //    return NotFound();
             //}
             //Además, no se permiten más de 10 dispositivos periféricos por puerta de enlace.
-            
-            int count = 0;
-            
-            var deviceCount = await _context.Devices.Where(d => d.GatewaySerialNumber == device.GatewaySerialNumber).ToListAsync();
-            count = deviceCount.Count();
-            if (count > 10) { return Problem("Each gateway cannot have more than 10 devices, select another gateway"); }
-            else
+            if (IsStatusValidate(device))
             {
-                _context.Devices.Add(device);
-                await _context.SaveChangesAsync();
-                return CreatedAtAction("GetDevice", new { id = device.UID }, device); ;
-            }      
+                int count = 0;
+
+                var deviceCount = await _context.Devices.Where(d => d.GatewaySerialNumber == device.GatewaySerialNumber).ToListAsync();
+                count = deviceCount.Count();
+                if (count > 10) { return Problem("Each gateway cannot have more than 10 devices, select another gateway"); }
+                else
+                {
+                    _context.Devices.Add(device);
+                    await _context.SaveChangesAsync();
+                    return CreatedAtAction("GetDevice", new { id = device.UID }, device); ;
+                }
+
+            }else
+                return Problem("The status no write correct");
         }
 
         // DELETE: api/Devices/5
@@ -127,6 +164,16 @@ namespace GatewayDeviceAPI.Controllers
         private bool DeviceExists(int id)
         {
             return _context.Devices.Any(e => e.UID == id);
+        }
+
+        private bool IsStatusValidate(Device device)
+        {
+            if ((device.Status == "Online") || (device.Status == "Offline"))
+            {
+                return true;
+            }else
+                return false;
+
         }
     }
 }
