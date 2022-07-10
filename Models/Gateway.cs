@@ -11,7 +11,10 @@ namespace GatewayDeviceAPI.Models
         #region Properties
         // public int GatewayId { get; set; }
         [Key]
+        [MaxLength(100)]
+        //public int SerialNumber { get; set; }
         public int SerialNumber { get; set; }
+        [Required]
         [MaxLength(50)]
         public string Name { get; set; }
         [Required]

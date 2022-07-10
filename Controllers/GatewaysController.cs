@@ -131,6 +131,7 @@ namespace GatewayDeviceAPI.Controllers
             if (CheckIPv4Valid(gateway.IPV4)/*&&(IsIPv4NotExist(gateway.IPV4))*/)
             {
                 _context.Gateways.Add(gateway);
+                
                 await _context.SaveChangesAsync();
                 return CreatedAtAction("GetGateway", new { id = gateway.SerialNumber }, gateway);
             }else

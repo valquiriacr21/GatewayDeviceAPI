@@ -10,8 +10,8 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace GatewayDeviceAPI.Migrations
 {
     [DbContext(typeof(AppDbContext))]
-    [Migration("20220706040233_AccommodatingSpaceMaxLength")]
-    partial class AccommodatingSpaceMaxLength
+    [Migration("20220710060730_InicialCreate")]
+    partial class InicialCreate
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
@@ -29,16 +29,20 @@ namespace GatewayDeviceAPI.Migrations
                         .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
 
                     b.Property<DateTime>("DateCreated")
-                        .HasColumnType("datetime2");
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("datetime2")
+                        .HasDefaultValueSql("getdate()");
 
                     b.Property<int>("GatewaySerialNumber")
                         .HasColumnType("int");
 
                     b.Property<string>("Status")
+                        .IsRequired()
                         .HasMaxLength(7)
                         .HasColumnType("nvarchar(7)");
 
                     b.Property<string>("Vendor")
+                        .IsRequired()
                         .HasMaxLength(50)
                         .HasColumnType("nvarchar(50)");
 
@@ -53,6 +57,7 @@ namespace GatewayDeviceAPI.Migrations
                 {
                     b.Property<int>("SerialNumber")
                         .ValueGeneratedOnAdd()
+                        .HasMaxLength(100)
                         .HasColumnType("int")
                         .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
 
@@ -62,6 +67,7 @@ namespace GatewayDeviceAPI.Migrations
                         .HasColumnType("nvarchar(15)");
 
                     b.Property<string>("Name")
+                        .IsRequired()
                         .HasMaxLength(50)
                         .HasColumnType("nvarchar(50)");
 

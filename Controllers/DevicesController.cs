@@ -43,6 +43,7 @@ namespace GatewayDeviceAPI.Controllers
             var devices = await _context.Devices.Where(d => d.Vendor == Vendor).ToListAsync();
             return devices;
         }
+
         [HttpGet("Status={Status}")]
         //[RouteAttribute="DevicesGateways")]
         public async Task<ActionResult<IEnumerable<Device>>> GetDevicesByStatus(string Status)
@@ -57,6 +58,14 @@ namespace GatewayDeviceAPI.Controllers
             var devices = await _context.Devices.Where(d => d.DateCreated == DateCreated).ToListAsync();
             return devices;
         }
+
+        //[HttpGet("Status={Status}&&Vendor={Vendor}")]
+        ////[RouteAttribute="DevicesGateways")]
+        //public async Task<ActionResult<IEnumerable<Device>>> GetDevicesByStatusVendor(string Status, string Vendor)
+        //{
+        //    var devices = await _context.Devices.Where(d => ((d.Status == Status)&&(d.Vendor == Vendor)).ToListAsync();
+        //    return devices;
+        //}
 
         // GET: api/Devices/5
         [HttpGet("{id}")]
