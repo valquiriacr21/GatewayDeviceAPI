@@ -12,6 +12,7 @@ namespace GatewayDeviceAPI.Models
         #region Properties
         // public int GatewayId { get; set; }
         [Key]
+        [Required(ErrorMessage = "Serial Number is Required")]
         [MaxLength(450)]
         [MinLength(2)]
         //public int SerialNumber { get; set; }
@@ -22,6 +23,7 @@ namespace GatewayDeviceAPI.Models
         public string Name { get; set; }
 
         [Required(ErrorMessage = "IPV4 is Required")]
+        //[RegularExpression(@"^((\d{1,2}|1\d\d|2[0-4]\d|25[0-5])\.){3}(\d{1,2}|1\d\d|2[0-4]\d|25[0-5])$", ErrorMessage = "Incorrect IPv4 Format")]
         [MaxLength(15)]
         [MinLength(7)]
         public string IPV4 { get; set; }  

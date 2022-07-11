@@ -32,7 +32,7 @@ namespace GatewayDeviceAPI.Models
 
         [Required(ErrorMessage = "Status is Required")]
         [DisplayName("Status: Online/Offline ")]
-        [RegularExpression(@"Online|Offline", ErrorMessage = "Incorrect status Format")]
+        [RegularExpression(@"Online|Offline", ErrorMessage = "Incorrect Status Format")]
         [MaxLength(7)]
         [MinLength(6)]        
         public string Status { get; set; }
