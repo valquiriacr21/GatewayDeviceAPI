@@ -18,26 +18,20 @@ namespace GatewayDeviceAPI.Controllers
         private readonly AppDbContext _context;
         #endregion
 
-        #region Methods and Public Verbs
-
+        #region Constructors
         public GatewaysController(AppDbContext context)
         {
             _context = context;
         }
+        #endregion
 
+        #region APIController Methods and Verbs
+
+        #region GET
         // GET: api/Gateways
         [HttpGet]
         public async Task<ActionResult<IEnumerable<Gateway>>> GetGateways()
         {
-            ///private IEnumerable<Gateway> gateways = new List<Gateway>();
-            //gateways=await _context.Gateways.ToListA();
-            //gateways
-
-            //foreach (var gateway in _context.Gateways)
-            //{
-            //    gateways= await _context.Gateways.Where(g => g.SerialNumber == id).Include(d => d.Devices).FirstAsync();
-            //var gateway = await _context.Gateways.Where(g => g.SerialNumber == _context.Gateways.).Include(d => d.Devices).FirstAsync();
-            //var gateway = await _context.Gateways.Select(g=>g.SerialNumber).Include(d => d.Devices).ToListAsync();
             return await _context.Gateways.ToListAsync();
         }
 
@@ -45,7 +39,6 @@ namespace GatewayDeviceAPI.Controllers
         [HttpGet("{id}")]
         public async Task<ActionResult<Gateway>> GetGateway(string id)
         {
-            // var gateway = await _context.Gateways.FindAsync(id);
             var gateway = await _context.Gateways.Where(g => g.SerialNumber == id).Include(d => d.Devices).FirstAsync();
 
             if (gateway == null)
@@ -60,7 +53,6 @@ namespace GatewayDeviceAPI.Controllers
         //[Route("{name}")]
         public async Task<ActionResult<IEnumerable<Gateway>>> GetGatewaysByName(string name)
         {
-            // var gateway = await _context.Gateways.FindAsync(id);
             var gateways = await _context.Gateways.Where(g => g.Name == name).Include(d => d.Devices).ToListAsync();
 
             if (gateways == null)
@@ -76,7 +68,6 @@ namespace GatewayDeviceAPI.Controllers
         //[Route("{Ipv4}")]
         public async Task<ActionResult<IEnumerable<Gateway>>> GetGatewaysByIPv4(string Ipv4)
         {
-            // var gateway = await _context.Gateways.FindAsync(id);
             var gateways = await _context.Gateways.Where(g => g.IPV4 == Ipv4).Include(d => d.Devices).ToListAsync();
 
             if (gateways == null)
@@ -86,6 +77,9 @@ namespace GatewayDeviceAPI.Controllers
 
             return gateways;
         }
+        #endregion
+
+        #region PUT update
 
         // PUT: api/Gateways/5
         // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
@@ -96,10 +90,36 @@ namespace GatewayDeviceAPI.Controllers
             {
                 return BadRequest();
             }
-            if (CheckIPv4Valid(gateway.IPV4) /*&& (IsIPv4NotExist(gateway.IPV4))*/)
+            
+            if (Ipv4HadModifed(id, gateway.IPV4))
+            {
+                if (Ipv4NotExists(gateway.IPV4) && CheckIPv4Valid(gateway.IPV4))
+                {
+                    _context.Entry(gateway).State = EntityState.Modified;
+                    try
+                    {
+                        await _context.SaveChangesAsync();
+                    }
+                    catch (DbUpdateConcurrencyException)
+                    {
+                        if (!GatewayExists(id))
+                        {
+                            return NotFound();
+                        }
+                        else
+                        {
+                            throw;
+                        }
+                    }
+
+                }
+                else
+                {
+                    return Problem("You need to write the correct IPv4 address. or see if the ipv4 exist");
+                }
+            }else
             {
                 _context.Entry(gateway).State = EntityState.Modified;
-
                 try
                 {
                     await _context.SaveChangesAsync();
@@ -116,19 +136,23 @@ namespace GatewayDeviceAPI.Controllers
                     }
                 }
             }
-            else
-            {
-                return Problem("You need to write the correct IPv4 address.");
-            }
             return NoContent();
         }
+        #endregion
+
+        #region POST Add
 
         // POST: api/Gateways
         // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
         [HttpPost]
         public async Task<ActionResult<Gateway>> PostGateway([FromBody]Gateway gateway)
         {
-            if (CheckIPv4Valid(gateway.IPV4)/*&&(IsIPv4NotExist(gateway.IPV4))*/)
+            if(GatewayExists(gateway.SerialNumber))
+            {
+                return NotFound();
+            }
+            
+            if (Ipv4NotExists(gateway.IPV4) && CheckIPv4Valid(gateway.IPV4))
             {
                 _context.Gateways.Add(gateway);
                 
@@ -141,7 +165,9 @@ namespace GatewayDeviceAPI.Controllers
             }
             
         }
+        #endregion
 
+        #region DELETE
         // DELETE: api/Gateways/5
         [HttpDelete("{id}")]
         public async Task<IActionResult> DeleteGateway(string id)
@@ -158,11 +184,23 @@ namespace GatewayDeviceAPI.Controllers
             return NoContent();
         }
         #endregion
-        #region Privete Methods
+
+        #endregion
+
+        #region Validations
         private bool GatewayExists(string id)
         {
             return _context.Gateways.Any(e => e.SerialNumber == id);
         }
+        private bool Ipv4NotExists(string ipv4)
+        {
+            return !(_context.Gateways.Any(e => e.IPV4 == ipv4));
+        }
+        private bool Ipv4HadModifed(string serialnumber, string ipv4)
+        {
+           return  _context.Gateways.Any(e => (e.SerialNumber == serialnumber) && (e.IPV4 != ipv4));
+        }
+
 
         private bool CheckIPv4Valid(string strIPv4)
         {
@@ -196,19 +234,7 @@ namespace GatewayDeviceAPI.Controllers
             }
             return true;
         }
-        //public bool IsIPv4NotExist(Gateway gateway)
-        //{
-        //    List<Gateway> gateways = new List<Gateway>();
-        //    gateways = _context.Gateways.ToList();
-        //    foreach (Gateway gatewayhere in gateways)
-        //    {  
-        //        if(gatewayhere.IPV4 == gateway.IPV4)
-        //        {
-        //            return false;
-        //        }
-        //    }
-        //    return true;
-        //}
+
         #endregion
 
     }

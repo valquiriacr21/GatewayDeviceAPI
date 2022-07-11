@@ -18,11 +18,14 @@ namespace GatewayDeviceAPI.Models
         [DisplayName("Vendor")]
         [Required(ErrorMessage = "Vendor is Required")]
         [MaxLength(50)]
+        [MinLength(2)]
         public string Vendor { get; set; }
 
         [DisplayName("Date Created")]
         [Required(ErrorMessage = "DateCreated is Required")]
         [DisplayFormat(DataFormatString = "{0:dd/MM/yyyy hh:mm:ss tt}")]
+        //[RegularExpression("{0:d/M/yyyy HH:mm:ss}" ,
+        // ErrorMessage = "Wrong Syntax")]
         //[DatabaseGenerated(DatabaseGeneratedOption.Identity)]
         public DateTime DateCreated { get; set; }
 
@@ -38,6 +41,7 @@ namespace GatewayDeviceAPI.Models
         [ForeignKey("Gateway")]
         [DisplayName("Select Gateway")]
         [MaxLength(450)]
+        [MinLength(2)]
         public string GatewaySerialNumber { get; set; }
         Gateway Gateway { get; set; }
         #endregion

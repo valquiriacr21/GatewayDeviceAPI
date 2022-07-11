@@ -13,6 +13,7 @@ namespace GatewayDeviceAPI.Models
         // public int GatewayId { get; set; }
         [Key]
         [MaxLength(450)]
+        [MinLength(2)]
         //public int SerialNumber { get; set; }
         public string SerialNumber { get; set; }
         [Required(ErrorMessage = "Name is Required")]
