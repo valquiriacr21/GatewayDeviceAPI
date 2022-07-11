@@ -22,6 +22,7 @@ namespace GatewayDeviceAPI.Models
 
         [Required(ErrorMessage = "IPV4 is Required")]
         [MaxLength(15)]
+        [MinLength(7)]
         public string IPV4 { get; set; }  
         
         public List<Device> Devices { get; set; }
