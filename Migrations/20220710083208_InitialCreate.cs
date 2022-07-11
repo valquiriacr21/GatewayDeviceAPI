@@ -3,7 +3,7 @@ using Microsoft.EntityFrameworkCore.Migrations;
 
 namespace GatewayDeviceAPI.Migrations
 {
-    public partial class InicialCreate : Migration
+    public partial class InitialCreate : Migration
     {
         protected override void Up(MigrationBuilder migrationBuilder)
         {
@@ -11,8 +11,7 @@ namespace GatewayDeviceAPI.Migrations
                 name: "Gateways",
                 columns: table => new
                 {
-                    SerialNumber = table.Column<int>(type: "int", maxLength: 100, nullable: false)
-                        .Annotation("SqlServer:Identity", "1, 1"),
+                    SerialNumber = table.Column<string>(type: "nvarchar(450)", maxLength: 450, nullable: false),
                     Name = table.Column<string>(type: "nvarchar(50)", maxLength: 50, nullable: false),
                     IPV4 = table.Column<string>(type: "nvarchar(15)", maxLength: 15, nullable: false)
                 },
@@ -30,7 +29,7 @@ namespace GatewayDeviceAPI.Migrations
                     Vendor = table.Column<string>(type: "nvarchar(50)", maxLength: 50, nullable: false),
                     DateCreated = table.Column<DateTime>(type: "datetime2", nullable: false, defaultValueSql: "getdate()"),
                     Status = table.Column<string>(type: "nvarchar(7)", maxLength: 7, nullable: false),
-                    GatewaySerialNumber = table.Column<int>(type: "int", nullable: false)
+                    GatewaySerialNumber = table.Column<string>(type: "nvarchar(450)", maxLength: 450, nullable: false)
                 },
                 constraints: table =>
                 {

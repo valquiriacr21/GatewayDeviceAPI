@@ -43,7 +43,7 @@ namespace GatewayDeviceAPI.Controllers
 
         // GET: api/Gateways/5
         [HttpGet("{id}")]
-        public async Task<ActionResult<Gateway>> GetGateway(int id)
+        public async Task<ActionResult<Gateway>> GetGateway(string id)
         {
             // var gateway = await _context.Gateways.FindAsync(id);
             var gateway = await _context.Gateways.Where(g => g.SerialNumber == id).Include(d => d.Devices).FirstAsync();
@@ -90,7 +90,7 @@ namespace GatewayDeviceAPI.Controllers
         // PUT: api/Gateways/5
         // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
         [HttpPut("{id}")]
-        public async Task<IActionResult> PutGateway(int id, [FromBody]Gateway gateway)
+        public async Task<IActionResult> PutGateway(string id, [FromBody]Gateway gateway)
         {
             if (id != gateway.SerialNumber)
             {
@@ -144,7 +144,7 @@ namespace GatewayDeviceAPI.Controllers
 
         // DELETE: api/Gateways/5
         [HttpDelete("{id}")]
-        public async Task<IActionResult> DeleteGateway(int id)
+        public async Task<IActionResult> DeleteGateway(string id)
         {
             var gateway = await _context.Gateways.FindAsync(id);
             if (gateway == null)
@@ -159,7 +159,7 @@ namespace GatewayDeviceAPI.Controllers
         }
         #endregion
         #region Privete Methods
-        private bool GatewayExists(int id)
+        private bool GatewayExists(string id)
         {
             return _context.Gateways.Any(e => e.SerialNumber == id);
         }

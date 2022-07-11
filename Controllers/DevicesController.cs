@@ -29,7 +29,7 @@ namespace GatewayDeviceAPI.Controllers
         // GET: api/Devices
         [HttpGet("DevicesGateways={GatewaySerialNumber}")]
         //[RouteAttribute="DevicesGateways")]
-        public async Task<ActionResult<IEnumerable<Device>>> GetDevicesByGatewaySerialNumber(int GatewaySerialNumber)
+        public async Task<ActionResult<IEnumerable<Device>>> GetDevicesByGatewaySerialNumber(string GatewaySerialNumber)
         {
             var devices = await _context.Devices.Where(d => d.GatewaySerialNumber == GatewaySerialNumber).ToListAsync();
             return devices;
@@ -48,8 +48,13 @@ namespace GatewayDeviceAPI.Controllers
         //[RouteAttribute="DevicesGateways")]
         public async Task<ActionResult<IEnumerable<Device>>> GetDevicesByStatus(string Status)
         {
-            var devices = await _context.Devices.Where(d => d.Status == Status).ToListAsync();
-            return devices;
+            if (IsStatusValidate(Status))
+            {
+                var devices = await _context.Devices.Where(d => d.Status == Status).ToListAsync();
+                return devices;
+            }
+            else
+                return Problem("the status is not written correctly");
         }
         [HttpGet("DateCreated={DateCreated}")]
         //[RouteAttribute="DevicesGateways")]
@@ -94,32 +99,36 @@ namespace GatewayDeviceAPI.Controllers
             int count = 0;
             var deviceCount = await _context.Devices.Where(d => d.GatewaySerialNumber == device.GatewaySerialNumber).ToListAsync();
             count = deviceCount.Count();
-            if (count <= 10)
+            if (IsStatusValidate(device))
             {
-                _context.Entry(device).State = EntityState.Modified;
-                //Edit have a poblem if not modify the serial number Gateway
-                //await _context.SaveChangesAsync();
-                //return OkResult;
-                try
+                if (count <= 10)
                 {
-                    await _context.SaveChangesAsync();
+                    _context.Entry(device).State = EntityState.Modified;
+                    //Edit have a poblem if not modify the serial number Gateway
+                    //await _context.SaveChangesAsync();
+                    //return OkResult;
+                    try
+                    {
+                        await _context.SaveChangesAsync();
+                    }
+                    catch (DbUpdateConcurrencyException)
+                    {
+                        if (!DeviceExists(id))
+                        {
+                            return NotFound();
+                        }
+                        else
+                        {
+                            throw;
+                        }
+                    }
                 }
-                catch (DbUpdateConcurrencyException)
+                else
                 {
-                    if (!DeviceExists(id))
-                    {
-                        return NotFound();
-                    }
-                    else
-                    {
-                        throw;
-                    }
+                    return Problem("Each gateway cannot have more than 10 devices, select another gateway");
                 }
-            }
-            else
-            {
-                return Problem("Each gateway cannot have more than 10 devices, select another gateway");
-            }
+            }else
+                return Problem("the status is not written correctly");
 
             return NoContent();
         }
@@ -151,7 +160,7 @@ namespace GatewayDeviceAPI.Controllers
                 }
 
             }else
-                return Problem("The status no write correct");
+                return Problem("the status is not written correctly");
         }
 
         // DELETE: api/Devices/5
@@ -181,6 +190,16 @@ namespace GatewayDeviceAPI.Controllers
             {
                 return true;
             }else
+                return false;
+
+        }
+        private bool IsStatusValidate(string Status)
+        {
+            if ((Status == "Online") || (Status == "Offline"))
+            {
+                return true;
+            }
+            else
                 return false;
 
         }

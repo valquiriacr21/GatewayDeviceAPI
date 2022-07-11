@@ -10,8 +10,8 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace GatewayDeviceAPI.Migrations
 {
     [DbContext(typeof(AppDbContext))]
-    [Migration("20220710060730_InicialCreate")]
-    partial class InicialCreate
+    [Migration("20220710083208_InitialCreate")]
+    partial class InitialCreate
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
@@ -33,8 +33,10 @@ namespace GatewayDeviceAPI.Migrations
                         .HasColumnType("datetime2")
                         .HasDefaultValueSql("getdate()");
 
-                    b.Property<int>("GatewaySerialNumber")
-                        .HasColumnType("int");
+                    b.Property<string>("GatewaySerialNumber")
+                        .IsRequired()
+                        .HasMaxLength(450)
+                        .HasColumnType("nvarchar(450)");
 
                     b.Property<string>("Status")
                         .IsRequired()
@@ -55,11 +57,9 @@ namespace GatewayDeviceAPI.Migrations
 
             modelBuilder.Entity("GatewayDeviceAPI.Models.Gateway", b =>
                 {
-                    b.Property<int>("SerialNumber")
-                        .ValueGeneratedOnAdd()
-                        .HasMaxLength(100)
-                        .HasColumnType("int")
-                        .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
+                    b.Property<string>("SerialNumber")
+                        .HasMaxLength(450)
+                        .HasColumnType("nvarchar(450)");
 
                     b.Property<string>("IPV4")
                         .IsRequired()

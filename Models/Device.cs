@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.ComponentModel;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 using System.Linq;
@@ -14,18 +15,30 @@ namespace GatewayDeviceAPI.Models
         [Key]
         public int UID { get; set; }
 
-        [Required]
+        [DisplayName("Vendor")]
+        [Required(ErrorMessage = "Vendor is Required")]
         [MaxLength(50)]
         public string Vendor { get; set; }
-        [Required]
+
+        [DisplayName("Date Created")]
+        [Required(ErrorMessage = "DateCreated is Required")]
+        [DisplayFormat(DataFormatString = "{0:dd/MM/yyyy hh:mm:ss tt}")]
         //[DatabaseGenerated(DatabaseGeneratedOption.Identity)]
         public DateTime DateCreated { get; set; }
-        [Required]
+
+
+        [Required(ErrorMessage = "Status is Required")]
+        [DisplayName("Status: Online/Offline ")]
+        [RegularExpression(@"Online|Offline", ErrorMessage = "Incorrect status Format")]
         [MaxLength(7)]
+        [MinLength(6)]        
         public string Status { get; set; }
         [Required]
         //[MaxLength(100)]
-        public int GatewaySerialNumber { get; set; }
+        [ForeignKey("Gateway")]
+        [DisplayName("Select Gateway")]
+        [MaxLength(450)]
+        public string GatewaySerialNumber { get; set; }
         Gateway Gateway { get; set; }
         #endregion
 

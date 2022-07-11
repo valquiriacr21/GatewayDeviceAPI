@@ -31,8 +31,10 @@ namespace GatewayDeviceAPI.Migrations
                         .HasColumnType("datetime2")
                         .HasDefaultValueSql("getdate()");
 
-                    b.Property<int>("GatewaySerialNumber")
-                        .HasColumnType("int");
+                    b.Property<string>("GatewaySerialNumber")
+                        .IsRequired()
+                        .HasMaxLength(450)
+                        .HasColumnType("nvarchar(450)");
 
                     b.Property<string>("Status")
                         .IsRequired()
@@ -53,11 +55,9 @@ namespace GatewayDeviceAPI.Migrations
 
             modelBuilder.Entity("GatewayDeviceAPI.Models.Gateway", b =>
                 {
-                    b.Property<int>("SerialNumber")
-                        .ValueGeneratedOnAdd()
-                        .HasMaxLength(100)
-                        .HasColumnType("int")
-                        .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
+                    b.Property<string>("SerialNumber")
+                        .HasMaxLength(450)
+                        .HasColumnType("nvarchar(450)");
 
                     b.Property<string>("IPV4")
                         .IsRequired()
